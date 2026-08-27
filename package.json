@@ -1,0 +1,8 @@
+{
+  "name": "lich-truc-noi-tru-v6-3",
+  "private": true,
+  "version": "6.3.0",
+  "dependencies": {
+    "googleapis": "^144.0.0"
+  }
+}
