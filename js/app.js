@@ -1,4 +1,4 @@
-/* Lịch trực nội trú V6.12 - nguồn tháng áp dụng thật sự, Excel sạch tự áp dụng */
+/* Lịch trực NTT V7.2 - chuẩn hóa tên Triệu Thị Đàn */
 const SHEET_ID=window.APP_CONFIG.SHEET_ID;
 const ADMIN_PIN_HASH=window.APP_CONFIG.ADMIN_PIN_HASH;
 let IS_ADMIN=sessionStorage.getItem('dutyAdminUnlocked')==='1';
@@ -148,20 +148,47 @@ function renderSundayRanking(rows,k){
 }
 
 
+const NAME_ALIASES={
+  'Triệu Thị Dần':'Triệu Thị Đàn',
+  'Trieu Thi Dan':'Triệu Thị Đàn'
+};
+function canonicalName(v){
+  let s=String(v??'').trim();
+  if(!s)return s;
+  if(NAME_ALIASES[s])return NAME_ALIASES[s];
+  let n=normText(s);
+  if(n==='trieu thi dan')return 'Triệu Thị Đàn';
+  return s;
+}
+function canonicalRows(rows){
+  return (rows||[]).map(r=>({
+    ...r,
+    leader:canonicalName(r.leader),
+    manager:canonicalName(r.manager),
+    classroom:canonicalName(r.classroom),
+    outside:(r.outside||[]).map(x=>[x[0],x[1],canonicalName(x[2])])
+  }));
+}
+function canonicalSourceStore(store){
+  let out={};
+  Object.entries(store||{}).forEach(([k,rows])=>out[k]=canonicalRows(rows));
+  return out;
+}
+
 function sourceStoreLoad(){
  try{
    let raw=localStorage.getItem('dutySourceMonths');
    let x=raw?JSON.parse(raw):{};
-   SOURCE_MONTHS=(x&&typeof x==='object')?x:{};
+   SOURCE_MONTHS=canonicalSourceStore((x&&typeof x==='object')?x:{});
  }catch{SOURCE_MONTHS={}}
  let schema=Number(localStorage.getItem('dutySourceSchemaVersion')||0);
- if(schema<612){
+ if(schema<702){
    if(!SOURCE_MONTHS['2026-09'])SOURCE_MONTHS['2026-09']=JSON.parse(JSON.stringify(DEFAULT_SOURCE_MONTHS['2026-09']));
    localStorage.setItem('dutySourceMonths',JSON.stringify(SOURCE_MONTHS));
-   localStorage.setItem('dutySourceSchemaVersion','612');
+   localStorage.setItem('dutySourceSchemaVersion','702');
  }
 }
-function sourceStoreSave(){localStorage.setItem('dutySourceMonths',JSON.stringify(SOURCE_MONTHS))}
+function sourceStoreSave(){SOURCE_MONTHS=canonicalSourceStore(SOURCE_MONTHS);localStorage.setItem('dutySourceMonths',JSON.stringify(SOURCE_MONTHS))}
 function normText(v){return String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/đ/g,'d').replace(/\s+/g,' ').trim()}
 function parseFlexibleDate(v,monthKey){v=String(v??'').trim();if(!v)return'';if(/^\d{4}-\d{2}-\d{2}$/.test(v))return v;v=v.replace(/[Oo]/g,'0').replace(/[Il]/g,'1');let m=v.match(/(\d{1,2})[\/\-.](\d{1,2})(?:[\/\-.](\d{2,4}))?/);if(m){let y=m[3]?Number(m[3]):Number(monthKey.slice(0,4));if(y<100)y+=2000;return `${y}-${pad(m[2])}-${pad(m[1])}`}let d=new Date(v);if(!isNaN(d)&&/\d/.test(v))return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;return''}
 function parseTimeRange(v){let s=String(v??'').trim().replace(/[–—]/g,'-').replace(/\./g,':');let m=s.match(/(\d{1,2})\s*[:h]\s*(\d{2})\s*-\s*(\d{1,2})\s*[:h]\s*(\d{2})/i);return m?[`${pad(m[1])}:${m[2]}`,`${pad(m[3])}:${m[4]}`]:['','']}
@@ -170,7 +197,7 @@ function matrixFromHtml(html){let doc=new DOMParser().parseFromString(html,'text
 async function loadScriptOnce(src,test){if(test())return;await new Promise((resolve,reject)=>{let x=document.createElement('script');x.src=src;x.onload=resolve;x.onerror=()=>reject(new Error('Không tải được thư viện đọc file'));document.head.appendChild(x)});if(!test())throw new Error('Thư viện đọc file chưa sẵn sàng')}
 async function fileToMatrix(file){let ext=(file.name.split('.').pop()||'').toLowerCase();if(['csv','txt'].includes(ext))return splitDelimited(await file.text());if(['xlsx','xls'].includes(ext)){await loadScriptOnce('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',()=>!!window.XLSX);let ab=await file.arrayBuffer(),wb=XLSX.read(ab,{type:'array',cellDates:false}),ws=wb.Sheets[wb.SheetNames[0]];return XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:''})}if(ext==='docx'){await loadScriptOnce('https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js',()=>!!window.mammoth);let ab=await file.arrayBuffer(),res=await mammoth.convertToHtml({arrayBuffer:ab});return matrixFromHtml(res.value)}throw new Error('File này cần đọc bằng OCR PDF/ảnh.')}
 function sourceHeaderMap(matrix){let best={i:0,score:-1,row:[]};for(let i=0;i<Math.min(10,matrix.length);i++){let row=matrix[i]||[],txt=normText(row.join(' | ')),score=['ngay','thu','lanh dao','quan sinh','quan li','ngoai gio','thoi gian'].filter(k=>txt.includes(k)).length;if(score>best.score)best={i,score,row}}let i=best.i,row=matrix[i]||[],next=matrix[i+1]||[],headers=row.map((x,j)=>normText(`${x||''} ${next[j]||''}`));let find=(...ks)=>headers.findIndex(h=>ks.some(k=>h.includes(k)));let map={header:i,date:find('ngay - thang','ngay thang','ngay'),day:find('thu'),leader:find('lanh dao'),manager:find('quan sinh'),classroom:find('quan li gio hoc','quan ly gio hoc'),time:find('thoi gian')};map.outPerson=headers.findIndex((h,j)=>h.includes('nguoi truc')||(h.includes('ngoai gio')&&j!==map.time));map.outCombined=headers.findIndex(h=>h.includes('truc ngoai gio')&&!h.includes('nguoi truc')&&!h.includes('thoi gian'));let header2=normText(next.join(' | '));map.start=i+1+(header2.includes('nguoi truc')||header2.includes('thoi gian')?1:0);let maxCols=Math.max(...matrix.slice(0,10).map(r=>r.length),0);if(map.date<0&&maxCols>=8){map={...map,date:2,day:1,leader:3,manager:4,classroom:5,outPerson:6,time:7,outCombined:-1,start:i+1}}else if(map.date<0&&maxCols>=6){map={...map,date:0,day:1,leader:2,manager:3,classroom:4,outCombined:5,outPerson:-1,time:-1,start:i+1}}return map}
-function parseSourceMatrix(matrix,monthKey){matrix=(matrix||[]).map(r=>(r||[]).map(v=>String(v??'').trim())).filter(r=>r.some(v=>v));if(!matrix.length)return[];let map=sourceHeaderMap(matrix),byDate=new Map(),currentDate='';for(let ri=map.start;ri<matrix.length;ri++){let a=matrix[ri],rawDate=map.date>=0?a[map.date]:'';let d=parseFlexibleDate(rawDate,monthKey);if(d)currentDate=d;else d=currentDate;if(!d||!d.startsWith(monthKey))continue;if(!byDate.has(d))byDate.set(d,{date:d,day:'',leader:'',manager:'',classroom:'',outside:[],source:true,_uncertain:{}});let r=byDate.get(d);let pick=i=>i>=0?String(a[i]||'').trim():'';r.day=normalizeDayByDate(d,pick(map.day)||r.day);r.leader=pick(map.leader)||r.leader;r.manager=pick(map.manager)||r.manager;r.classroom=pick(map.classroom)||r.classroom;if(map.outCombined>=0){let outs=outsideCell(pick(map.outCombined));outs.forEach(x=>{if(x[2])r.outside.push(x)})}else{let p=pick(map.outPerson),t=pick(map.time);if(p){let [s,e]=parseTimeRange(t);r.outside.push([s,e,p])}}}return [...byDate.values()].sort((a,b)=>a.date.localeCompare(b.date)).map(r=>({...r,outside:r.outside.filter((x,i,arr)=>i===arr.findIndex(y=>y[0]===x[0]&&y[1]===x[1]&&y[2]===x[2]))}))}
+function parseSourceMatrix(matrix,monthKey){matrix=(matrix||[]).map(r=>(r||[]).map(v=>String(v??'').trim())).filter(r=>r.some(v=>v));if(!matrix.length)return[];let map=sourceHeaderMap(matrix),byDate=new Map(),currentDate='';for(let ri=map.start;ri<matrix.length;ri++){let a=matrix[ri],rawDate=map.date>=0?a[map.date]:'';let d=parseFlexibleDate(rawDate,monthKey);if(d)currentDate=d;else d=currentDate;if(!d||!d.startsWith(monthKey))continue;if(!byDate.has(d))byDate.set(d,{date:d,day:'',leader:'',manager:'',classroom:'',outside:[],source:true,_uncertain:{}});let r=byDate.get(d);let pick=i=>i>=0?String(a[i]||'').trim():'';r.day=normalizeDayByDate(d,pick(map.day)||r.day);r.leader=canonicalName(pick(map.leader)||r.leader);r.manager=canonicalName(pick(map.manager)||r.manager);r.classroom=canonicalName(pick(map.classroom)||r.classroom);if(map.outCombined>=0){let outs=outsideCell(pick(map.outCombined));outs.forEach(x=>{if(x[2])r.outside.push(x)})}else{let p=pick(map.outPerson),t=pick(map.time);if(p){let [s,e]=parseTimeRange(t);r.outside.push([s,e,canonicalName(p)])}}}return [...byDate.values()].sort((a,b)=>a.date.localeCompare(b.date)).map(r=>({...r,outside:r.outside.filter((x,i,arr)=>i===arr.findIndex(y=>y[0]===x[0]&&y[1]===x[1]&&y[2]===x[2]))}))}
 
 /* ===== OCR PDF / ẢNH ===== */
 const OCR_COLS=[0.00,0.045,0.09,0.185,0.34,0.50,0.645,0.795,0.91,1.00];
@@ -224,7 +251,7 @@ if(structured.length&&vision.length===0&&!audit.warnings&&!audit.missing.length)
 }}catch(e){console.error(e);status.className='source-status err';status.textContent=e.message||'Không đọc được file.';SOURCE_PREVIEW=[];renderSourcePreview();setOcrProgress(false,'',0)}}
 function readSourcePaste(){if(!IS_ADMIN){openSettings();return;}let text=$('#sourcePaste').value.trim(),month=$('#sourceMonth').value,status=$('#sourceStatus');if(!text){status.className='source-status err';status.textContent='Chưa có dữ liệu dán.';return}let matrix=text.includes('\t')?text.split(/\r?\n/).map(r=>r.split('\t')):splitDelimited(text),rows=parseSourceMatrix(matrix,month);if(!rows.length){status.className='source-status err';status.textContent='Không nhận diện được lịch. Anh kiểm tra lại tháng và các cột dữ liệu.';return}SOURCE_PREVIEW=rows;SOURCE_PREVIEW_MONTH=month;status.className='source-status ok';status.textContent=`Đã nhận diện ${rows.length} ngày từ dữ liệu dán.`;renderSourcePreview()}
 function applySourceMonth(month,rows,message=''){
- let clean=rows.map(r=>({date:r.date,day:normalizeDayByDate(r.date,r.day),leader:r.leader,manager:r.manager,classroom:r.classroom,outside:(r.outside||[]).map(x=>[x[0],x[1],x[2]]),source:true}));
+ let clean=canonicalRows(rows).map(r=>({date:r.date,day:normalizeDayByDate(r.date,r.day),leader:r.leader,manager:r.manager,classroom:r.classroom,outside:(r.outside||[]).map(x=>[x[0],x[1],x[2]]),source:true}));
  SOURCE_MONTHS[month]=clean;
  sourceStoreSave();
  localStorage.setItem('dutyActiveMonth',month);
@@ -378,7 +405,7 @@ async function tryRefresh(){
    setSyncState('warn','Dữ liệu dự phòng',detail);
  }
 }
-function boot(){applyAdminUI();sourceStoreLoad();let saved=localStorage.getItem('generatedDutyMonth');if(saved){try{let x=JSON.parse(saved);if(Array.isArray(x)&&x.length&&x[0].date>='2026-09-01')GENERATED=x}catch{}}initPeople();refreshMonths();renderHome();renderMine();renderGenerated();renderMonth();renderSourceMonths();renderSourceStats();renderStats();tryRefresh();}
+function boot(){applyAdminUI();sourceStoreLoad();let saved=localStorage.getItem('generatedDutyMonth');if(saved){try{let x=JSON.parse(saved);if(Array.isArray(x)&&x.length&&x[0].date>='2026-09-01'){GENERATED=canonicalRows(x);localStorage.setItem('generatedDutyMonth',JSON.stringify(GENERATED))}}catch{}}initPeople();refreshMonths();renderHome();renderMine();renderGenerated();renderMonth();renderSourceMonths();renderSourceStats();renderStats();tryRefresh();}
 document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>show(t.dataset.view));
 function chooseRolePerson(mode,n){PERSON_MODE=mode;if(mode==='leader')$('#managerSelect').value='';if(mode==='manager')$('#leaderSelect').value='';$('#personSelect').value=n;$('#statPerson').value=n;MINE_FILTER='evening';document.querySelectorAll('#mineFilters .filterchip').forEach(x=>x.classList.toggle('active',x.dataset.filter==='evening'));renderQuick();renderMine();renderStats();if(n)show('mine')}
 const settingsModal=$('#settingsModal');

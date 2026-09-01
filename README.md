@@ -1,3 +1,9 @@
+# Lịch trực NTT V7.2
+
+- Chuẩn hóa tên chính thức: **Triệu Thị Đàn**.
+- Tự sửa dữ liệu cũ nếu từng lưu nhầm **Triệu Thị Dần** thành **Triệu Thị Đàn** khi khởi động app.
+- Chuẩn hóa cả dữ liệu nguồn tháng, lịch đã tạo và dữ liệu nhập mới.
+
 # Lịch trực nội trú V6.12 — project đầy đủ
 
 V6.12 nâng cấp **nhập lịch nguồn PDF/ảnh theo tháng** theo hướng chính xác hơn. Chức năng này chỉ mở cho Admin. PDF/ảnh được tăng nét trước khi OCR; tên được đối chiếu theo đúng nhóm Trực lãnh đạo, Trực quản sinh, Quản lí giờ học và Trực ngoài giờ thay vì so với toàn bộ danh sách chung.
