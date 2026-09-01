@@ -1,8 +1,12 @@
 {
-  "name": "lich-truc-noi-tru-v6-3",
+  "name": "lich-truc-noi-tru",
+  "version": "6.8.0",
   "private": true,
-  "version": "6.3.0",
-  "dependencies": {
-    "googleapis": "^144.0.0"
+  "description": "Ứng dụng tra cứu, thống kê, nhập nguồn và xếp lịch trực nội trú",
+  "scripts": {
+    "check": "node scripts/check.js"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }
