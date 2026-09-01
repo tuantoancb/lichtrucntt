@@ -17,7 +17,7 @@ for (const f of ['js/config.js', 'js/app.js', 'api/sheet.js', 'api/health.js']) 
   catch (e) { console.error('LỖI CÚ PHÁP:', f, e.message); failed = true; }
 }
 const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
-for (const ref of ['./css/style.css?v=6.10', './js/config.js?v=6.10', './js/app.js?v=6.10']) {
+for (const ref of ['./css/style.css?v=6.11', './js/config.js?v=6.11', './js/app.js?v=6.11']) {
   if (!html.includes(ref)) { console.error('INDEX CHƯA GỌI:', ref); failed = true; }
 }
 if (failed) process.exit(1);

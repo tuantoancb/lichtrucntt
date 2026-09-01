@@ -1,4 +1,4 @@
-# Nhập lịch nguồn PDF và ảnh — V6.10
+# Nhập lịch nguồn PDF và ảnh — V6.11
 
 ## Luồng Admin
 
@@ -34,5 +34,5 @@ Hỗ trợ PDF scan nhiều trang. Mỗi trang được render ở độ phân g
 OCR không được ghi thẳng vào lịch sử. Tên không khớp chắc chắn với danh sách hiện có hoặc ca thiếu thời gian sẽ được đánh dấu vàng để Admin duyệt.
 
 
-## Thay đổi ở V6.10
-OCR toàn trang thuần túy dễ sai với lịch scan bị nghiêng và chữ nhỏ. V6.10 thêm bước tăng nét/độ tương phản và quan trọng hơn là **đối chiếu tên theo vai trò**. Ví dụ cột Trực quản sinh chỉ được so với danh sách Trực quản sinh, giúp giảm việc OCR sai một vài ký tự rồi ghép nhầm sang giáo viên ở nhóm khác.
+## Thay đổi ở V6.11
+OCR toàn trang thuần túy dễ sai với lịch scan bị nghiêng và chữ nhỏ. V6.11 thêm bước tăng nét/độ tương phản và quan trọng hơn là **đối chiếu tên theo vai trò**. Ví dụ cột Trực quản sinh chỉ được so với danh sách Trực quản sinh, giúp giảm việc OCR sai một vài ký tự rồi ghép nhầm sang giáo viên ở nhóm khác.
