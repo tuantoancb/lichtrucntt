@@ -1,8 +1,8 @@
 {
   "name": "lich-truc-noi-tru",
-  "version": "6.11.0",
+  "version": "7.0.0",
   "private": true,
-  "description": "Ứng dụng tra cứu, OCR PDF/ảnh nguồn tháng, thống kê và xếp lịch trực nội trú",
+  "description": "Lịch trực NTT V7 - tra cứu, nguồn tháng, thống kê và xếp lịch trực nội trú",
   "scripts": {
     "check": "node scripts/check.js"
   },

@@ -1,6 +1,6 @@
-# Lịch trực nội trú V6.11 — project đầy đủ
+# Lịch trực nội trú V6.12 — project đầy đủ
 
-V6.11 nâng cấp **nhập lịch nguồn PDF/ảnh theo tháng** theo hướng chính xác hơn. Chức năng này chỉ mở cho Admin. PDF/ảnh được tăng nét trước khi OCR; tên được đối chiếu theo đúng nhóm Trực lãnh đạo, Trực quản sinh, Quản lí giờ học và Trực ngoài giờ thay vì so với toàn bộ danh sách chung.
+V6.12 nâng cấp **nhập lịch nguồn PDF/ảnh theo tháng** theo hướng chính xác hơn. Chức năng này chỉ mở cho Admin. PDF/ảnh được tăng nét trước khi OCR; tên được đối chiếu theo đúng nhóm Trực lãnh đạo, Trực quản sinh, Quản lí giờ học và Trực ngoài giờ thay vì so với toàn bộ danh sách chung.
 
 ## Cấu trúc
 
@@ -50,7 +50,7 @@ npm run check
 Phần API đã để sẵn nhưng chưa bắt buộc cấu hình. Khi app hoàn chỉnh mới đặt `GOOGLE_SERVICE_ACCOUNT_EMAIL` và `GOOGLE_PRIVATE_KEY`, đúng theo hướng đã chốt.
 
 
-## V6.11 - OCR tăng cường
+## V6.12 - OCR tăng cường
 - Tăng kích thước render PDF/ảnh trước OCR.
 - Grayscale + tăng tương phản + làm sạch nền.
 - Tesseract chế độ sparse text cho bảng scan.
@@ -58,9 +58,16 @@ Phần API đã để sẵn nhưng chưa bắt buộc cấu hình. Khi app hoàn
 - So khớp theo cửa sổ từ trong ô để chịu được ký tự rác quanh tên.
 - Mọi ô chưa đủ tin cậy vẫn tô vàng và bắt Admin kiểm tra trước khi lưu.
 
-> Mục tiêu của V6.11 là giảm lỗi OCR; không coi OCR là nguồn tuyệt đối. Với ảnh quá mờ/lệch, Admin vẫn cần sửa các ô vàng trong bảng xem trước.
+> Mục tiêu của V6.12 là giảm lỗi OCR; không coi OCR là nguồn tuyệt đối. Với ảnh quá mờ/lệch, Admin vẫn cần sửa các ô vàng trong bảng xem trước.
 
 
-## V6.11 - Lưu nguồn là áp dụng ngay
+## V6.12 - Lưu nguồn là áp dụng ngay
 
 Khi Admin bấm **Lưu & áp dụng vào app**, nguồn tháng được lưu vào `dutySourceMonths` và lập tức có quyền ưu tiên cao hơn lịch dự kiến cùng ngày. Toàn bộ màn hình **Hôm nay, Của tôi, Cả tháng, Thống kê** được render lại ngay, đồng thời tháng vừa nhập được chọn tự động.
+
+## V6.12 — sửa lỗi nguồn upload chưa thay lịch hiển thị
+
+- Migration một lần lịch nguồn 09/2026 đã kiểm tra để mở bản mới là thấy đúng nguồn, không còn lịch dự kiến cũ.
+- Excel/CSV/Word có cấu trúc, đủ ngày và không cảnh báo sẽ tự áp dụng ngay sau khi đọc.
+- Khi áp dụng nguồn, xóa bản dự kiến cùng tháng khỏi localStorage để không nhìn nhầm.
+- Hôm nay/Ngày mai có nhãn **✅ Nguồn tháng** khi đang hiển thị dữ liệu nguồn.
