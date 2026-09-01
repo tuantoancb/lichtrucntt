@@ -1,6 +1,6 @@
 {
   "name": "lich-truc-noi-tru",
-  "version": "7.0.0",
+  "version": "7.1.0",
   "private": true,
   "description": "Lịch trực NTT V7 - tra cứu, nguồn tháng, thống kê và xếp lịch trực nội trú",
   "scripts": {

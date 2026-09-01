@@ -98,7 +98,37 @@ function renderStats(){
    $('#statCards').innerHTML=`<div class="stat"><div class="n">${shifts.length}</div><div class="l">Tổng ca ngoài giờ</div></div><div class="stat"><div class="n">${sunDays}</div><div class="l">Ngày CN quy đổi</div></div><div class="stat"><div class="n">${sunShifts.length}</div><div class="l">Ca CN quy đổi</div></div><div class="stat"><div class="n">${satDays}</div><div class="l">Ngày Thứ 7</div></div><div class="stat"><div class="n">${totalH}</div><div class="l">Tổng giờ trực ngoài giờ</div></div>`;
    $('#statDetail').innerHTML=shifts.length?`<div class="list">${shifts.map(x=>`<div class="item"><div class="when">${fmt(x.date)}</div><div><b>Trực ngoài giờ</b><div class="muted">${x.day} • ${x.s}-${x.e}</div></div><span class="pill">${x.h} giờ</span></div>`).join('')}</div>`:'<div class="muted">Không có ca trực ngoài giờ trong phạm vi này.</div>';
  }
+ renderDutyExtremes(rows,k);
  renderSundayRanking(rows,k);
+}
+function outsideCounts(rows){
+ let names=new Set((ROT.outside||[]).filter(Boolean));
+ rows.forEach(r=>(r.outside||[]).forEach(x=>{let p=x&&x[2];if(p&&p!=='Nghỉ')names.add(p)}));
+ let map=new Map([...names].map(n=>[n,{person:n,shifts:0,hours:0,sundayDays:new Set(),sundayShifts:0}]));
+ rows.forEach(r=>(r.outside||[]).forEach(x=>{
+   let p=x&&x[2];if(!p||p==='Nghỉ')return;
+   if(!map.has(p))map.set(p,{person:p,shifts:0,hours:0,sundayDays:new Set(),sundayShifts:0});
+   let o=map.get(p);o.shifts++;o.hours+=hours(x[0],x[1]);
+   if(isSundayEquivalent(r.date)){o.sundayDays.add(r.date);o.sundayShifts++;}
+ }));
+ return [...map.values()].map(o=>({...o,sundayDays:o.sundayDays.size}));
+}
+function extremeGroup(rows,type){
+ let arr=outsideCounts(rows);if(!arr.length)return {value:0,people:[]};
+ let value=type==='max'?Math.max(...arr.map(x=>x.shifts)):Math.min(...arr.map(x=>x.shifts));
+ return {value,people:arr.filter(x=>x.shifts===value).sort((a,b)=>a.person.localeCompare(b.person,'vi'))};
+}
+function extremeCard(label,icon,group,tone){
+ let people=group.people||[];
+ let names=people.length?people.map(x=>`<div class="extreme-person"><b>${x.person}</b><span>${x.sundayDays} ngày CN QĐ</span></div>`).join(''):'<div class="muted">Chưa có dữ liệu</div>';
+ return `<div class="extreme-card ${tone}"><div class="extreme-head"><div><span class="extreme-icon">${icon}</span><b>${label}</b></div><span class="extreme-value">${group.value} ca</span></div><div class="extreme-people">${names}</div></div>`;
+}
+function renderDutyExtremes(monthRows,k){
+ let box=$('#extremeCards');if(!box)return;
+ let all=allRows(), monthLabel=k==='all'?'Phạm vi đang xem':`Tháng ${k.slice(5,7)}/${k.slice(0,4)}`;
+ let scopeMax=extremeGroup(monthRows,'max'),scopeMin=extremeGroup(monthRows,'min');
+ let allMax=extremeGroup(all,'max'),allMin=extremeGroup(all,'min');
+ box.innerHTML=extremeCard(`Nhiều nhất · ${monthLabel}`,'⬆️',scopeMax,'high')+extremeCard(`Ít nhất · ${monthLabel}`,'⬇️',scopeMin,'low')+extremeCard('Nhiều nhất · Toàn bộ','🏆',allMax,'high alltime')+extremeCard('Ít nhất · Toàn bộ','🌱',allMin,'low alltime');
 }
 function renderSundayRanking(rows,k){
  let map=new Map();
