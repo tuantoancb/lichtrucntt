@@ -1,6 +1,6 @@
-# Lịch trực nội trú V6.9 — project đầy đủ
+# Lịch trực nội trú V6.10 — project đầy đủ
 
-V6.9 bổ sung **nhập lịch nguồn theo tháng từ PDF scan hoặc nhiều ảnh chụp**. Chức năng này chỉ mở cho Admin.
+V6.10 nâng cấp **nhập lịch nguồn PDF/ảnh theo tháng** theo hướng chính xác hơn. Chức năng này chỉ mở cho Admin. PDF/ảnh được tăng nét trước khi OCR; tên được đối chiếu theo đúng nhóm Trực lãnh đạo, Trực quản sinh, Quản lí giờ học và Trực ngoài giờ thay vì so với toàn bộ danh sách chung.
 
 ## Cấu trúc
 
@@ -48,3 +48,14 @@ npm run check
 ## Google Sheet riêng tư
 
 Phần API đã để sẵn nhưng chưa bắt buộc cấu hình. Khi app hoàn chỉnh mới đặt `GOOGLE_SERVICE_ACCOUNT_EMAIL` và `GOOGLE_PRIVATE_KEY`, đúng theo hướng đã chốt.
+
+
+## V6.10 - OCR tăng cường
+- Tăng kích thước render PDF/ảnh trước OCR.
+- Grayscale + tăng tương phản + làm sạch nền.
+- Tesseract chế độ sparse text cho bảng scan.
+- Fuzzy-match theo **đúng vai trò** để giảm nhầm người có tên gần giống.
+- So khớp theo cửa sổ từ trong ô để chịu được ký tự rác quanh tên.
+- Mọi ô chưa đủ tin cậy vẫn tô vàng và bắt Admin kiểm tra trước khi lưu.
+
+> Mục tiêu của V6.10 là giảm lỗi OCR; không coi OCR là nguồn tuyệt đối. Với ảnh quá mờ/lệch, Admin vẫn cần sửa các ô vàng trong bảng xem trước.
