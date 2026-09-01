@@ -1,51 +1,50 @@
-# Lịch trực nội trú V6.8 — bản project đầy đủ
+# Lịch trực nội trú V6.9 — project đầy đủ
 
-Đây là bản tách project từ V6.7 để dễ bảo trì và đưa lên Vercel. `index.html` không còn chứa toàn bộ CSS/JavaScript.
+V6.9 bổ sung **nhập lịch nguồn theo tháng từ PDF scan hoặc nhiều ảnh chụp**. Chức năng này chỉ mở cho Admin.
 
 ## Cấu trúc
 
-- `index.html` — khung giao diện.
-- `css/style.css` — toàn bộ giao diện responsive.
-- `js/config.js` — cấu hình công khai như phiên bản, Sheet ID và khóa giao diện Admin tạm.
-- `js/app.js` — logic tra cứu, thống kê, tạo lịch, nhập nguồn tháng và xuất Word.
-- `api/sheet.js` — API đọc Google Sheet riêng tư trên Vercel; hiện chưa bắt buộc cấu hình.
-- `api/health.js` — kiểm tra API hoạt động.
-- `scripts/check.js` — kiểm tra file và cú pháp trước khi deploy.
+- `index.html` — giao diện.
+- `css/style.css` — giao diện responsive.
+- `js/config.js` — cấu hình công khai.
+- `js/app.js` — tra lịch, thống kê, cân bằng Trực ngoài giờ, nhập nguồn PDF/ảnh, xuất Word.
+- `api/sheet.js` — API Google Sheet riêng tư để dùng khi chốt bản chính thức.
+- `api/health.js` — kiểm tra API.
+- `docs/NHAP_NGUON_PDF_ANH.md` — mô tả quy trình nhập nguồn scan/ảnh.
+- `scripts/check.js` — kiểm tra project.
 - `vercel.json` — cấu hình Vercel.
 
+## Nhập lịch nguồn PDF / ảnh
+
+Admin vào **Cài đặt → Nhập nguồn tháng**, chọn tháng rồi tải:
+
+- PDF scan nhiều trang;
+- JPG/JPEG/PNG;
+- nhiều ảnh của cùng một tháng;
+- hoặc Excel/CSV/Word có bảng như trước.
+
+PDF/ảnh được OCR ngay trong trình duyệt bằng Tesseract.js; PDF được render bằng PDF.js. Ảnh dọc được tự xoay sang ngang trước khi nhận diện. Kết quả **không lưu thẳng**: app hiện bảng xem trước, tô vàng ô chưa chắc chắn và cho Admin sửa trực tiếp.
+
+> OCR chạy lần đầu cần Internet để tải thư viện và dữ liệu ngôn ngữ tiếng Việt.
+
+## Quy tắc thống kê
+
+Chỉ tính **Trực ngoài giờ**. Chủ nhật thực tế được tính là ngày Chủ nhật; riêng tháng 9, **01/09 và 02/09 cũng được tính như Chủ nhật** cho mục đích cân bằng.
+
 ## Chạy thử
-
-Có thể mở `index.html` trực tiếp để kiểm tra giao diện. Khi mở trực tiếp từ file, app sẽ dùng dữ liệu dự phòng nếu không đọc được Google Sheet.
-
-Để chạy qua HTTP cục bộ, tại thư mục project có thể dùng một web server tĩnh bất kỳ, ví dụ Python:
 
 ```bash
 python -m http.server 3000
 ```
 
-Sau đó mở `http://localhost:3000`.
+Mở `http://localhost:3000`.
 
-## Kiểm tra trước khi deploy
-
-Nếu máy có Node.js:
+## Kiểm tra
 
 ```bash
 npm run check
 ```
 
-## Đưa lên Vercel
+## Google Sheet riêng tư
 
-Có thể kéo cả thư mục này hoặc giải nén ZIP vào GitHub rồi Import Project trên Vercel. Không cần build command cho giao diện tĩnh.
-
-### Kết nối Google Sheet riêng tư — để làm ở giai đoạn chốt app
-
-API đã được chuẩn bị sẵn nhưng nếu chưa đặt biến môi trường thì app vẫn chạy bằng dữ liệu dự phòng. Khi chốt bản chính thức, chỉ cần đặt:
-
-- `GOOGLE_SERVICE_ACCOUNT_EMAIL`
-- `GOOGLE_PRIVATE_KEY`
-
-và chia sẻ Google Sheet cho email Service Account ở quyền Người xem. Không đưa private key vào `js/config.js`, GitHub hoặc file ZIP công khai.
-
-## Phân quyền Admin hiện tại
-
-V6.8 vẫn giữ cơ chế khóa giao diện Admin tạm của V6.7 để tiếp tục kiểm thử. Khi chốt bản dùng thật cần chuyển xác thực Admin sang phía máy chủ.
+Phần API đã để sẵn nhưng chưa bắt buộc cấu hình. Khi app hoàn chỉnh mới đặt `GOOGLE_SERVICE_ACCOUNT_EMAIL` và `GOOGLE_PRIVATE_KEY`, đúng theo hướng đã chốt.
