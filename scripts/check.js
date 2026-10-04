@@ -17,7 +17,7 @@ for (const f of ['js/config.js', 'js/published-sources.js', 'js/app.js', 'api/sh
   catch (e) { console.error('LỖI CÚ PHÁP:', f, e.message); failed = true; }
 }
 const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
-for (const ref of ['./css/style.css?v=7.0', './js/config.js?v=7.0', './js/app.js?v=7.7']) {
+for (const ref of ['./css/style.css?v=7.0', './js/config.js?v=7.0', './js/app.js?v=7.9']) {
   if (!html.includes(ref)) { console.error('INDEX CHƯA GỌI:', ref); failed = true; }
 }
 if (failed) process.exit(1);

@@ -98,3 +98,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 @media print{.hero,.card{box-shadow:none;background:#fff}.hero{border-top-color:#08634f}}
 .mine-picker{grid-template-columns:repeat(2,minmax(0,1fr));margin:0 0 20px;padding:16px;background:#eef4f7;border:1px solid #bfd1dd;border-radius:10px;align-items:start}
 @media(max-width:480px){.mine-picker{grid-template-columns:1fr;padding:12px;gap:12px}}
+.mine-picker{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(180px,.65fr)}
+.rolepicker.monthpick span{color:#294e65}
+@media(max-width:800px){.mine-picker{grid-template-columns:repeat(2,minmax(0,1fr))}.monthpick{grid-column:1/-1}}
+@media(max-width:480px){.mine-picker{grid-template-columns:1fr}.monthpick{grid-column:auto}}
