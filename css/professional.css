@@ -1,5 +1,5 @@
 /* Compact interface; existing data and scheduling behavior are preserved. */
-:root{--brand:#245c50;--bg:#f4f6f8;--line:#e3e8ed;--txt:#182c3b;--muted:#667786}
+:root{--brand:#08634f;--bg:#eaf0f3;--line:#c8d5df;--txt:#112f42;--muted:#445e70}
 body{background:var(--bg);font-size:14px;line-height:1.5}
 .app{max-width:1240px;padding:28px 24px}
 .hero{background:#fff;color:var(--txt);border:1px solid var(--line);border-radius:16px;padding:24px;box-shadow:none;overflow:visible}
@@ -55,3 +55,46 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 @media(max-width:480px){.app{padding:10px}.hero{padding:16px}.toolbar{grid-template-columns:1fr}.toolbar button{grid-column:auto}.pairgrid,.extreme-grid{grid-template-columns:1fr}.public-tabs .tab{font-size:11px}.section-title>.muted{width:100%}.monthday{padding:10px}.monthday .s{font-size:11px}.source-drop{padding:12px}.settings-panel{max-height:calc(100dvh - 24px)}.settings-modal{padding:12px}.item{grid-template-columns:76px minmax(0,1fr)}.source-month-item{flex-wrap:wrap}.school-name{max-width:calc(100% - 65px);padding-right:0}.settings-btn{top:16px;right:16px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 @media print{body{background:#fff}.hero,.card{box-shadow:none}.settings-btn,.toolbar,.tabs,.footer{display:none}.app{max-width:none;padding:0}.card{break-inside:avoid}.tablewrap{overflow:visible}}
+
+/* Stronger contrast and more distinct sections. */
+.hero{border-top:5px solid var(--brand);border-color:#b9cdd6;border-top-color:var(--brand);box-shadow:0 4px 16px #12364b08}
+.hero h1{color:#064e40}
+.school-name{color:#355d70;font-weight:700}
+.hero p,.muted,.monthday .s,.time,.stat .l{color:var(--muted)}
+.rolepicker span,.rolepicker.leaderpick span{color:#60339a;font-weight:700}
+.rolepicker.managerpick span{color:#08634f}
+.rolepicker select{border-color:#aebfcd;background:#f8fbfd}
+.toolbar button,.primary{background:#08634f;box-shadow:0 2px 4px #064e4014}
+.public-tabs{border-bottom-color:#b6c8d3;background:#dce8ec;border-radius:10px 10px 0 0;padding:0 14px;gap:18px}
+.public-tabs .tab{color:#38566a;padding:12px 14px}
+.public-tabs .tab.active{color:#fff;background:#08634f;border-radius:8px 8px 0 0}
+.public-tabs .tab.active:after{background:#064e40}
+.card{border-color:#c5d4dd;box-shadow:0 3px 12px #12364b06}
+.section-title h2,.rankhead h3{color:#153e55}
+.duty{border-color:#d0dce4}
+.duty.leader{border-left-color:#7541ad;background:#f6f0fc}
+.duty.manager{border-left-color:#10846a;background:#edf8f2}
+.duty.classroom{border-left-color:#2672ae;background:#eef5fc}
+.duty.outside{border-left-color:#c26618;background:#fff6ec}
+.duty .icon{background:#ffffffb3}
+.pair{background:#eef3f8;border-color:#c5d5e0}
+.pairbox:first-child{background:#f5eefc;border-color:#d5c1e8}
+.pairbox:last-child{background:#eaf7f0;border-color:#b9decc}
+.pairbox:first-child b{color:#61319a}.pairbox:last-child b{color:#08634f}
+.badge,.source-live-badge{background:#dff4e9;color:#075c45;border-color:#99cdb8}
+.pill{background:#e4edf3;color:#294e65}
+.dutyfilters .filterchip{border-color:#b7cad5;color:#36556a}
+.filterchip.active[data-filter="all"]{background:#08634f;border-color:#08634f}
+.monthday{border-color:#bdcfdc}.monthday .d{color:#0d5b4b;border-bottom-color:#c9d9e2}
+.stat{background:#eaf3f6;border-color:#bcd0dc}.stat .n{color:#0b5a49}
+.tablewrap th,.ranktable th{background:#dce9ee;color:#24485d;border-bottom-color:#b2cbd7}
+.rankhead{background:#eaf2f5}.ranktable tr.top1 td{background:#e3f3ea}
+.extreme-card.high{border-top:3px solid #c26618;background:#fffaf4}
+.extreme-card.low{border-top:3px solid #2672ae;background:#f4f9fe}
+.settings-btn{background:#e4f0ed;border-color:#adcdbf;color:#075c45}
+.secondary{border-color:#adbfcc;color:#294e65;background:#f7fafc}
+.footer{color:#526d7f}
+@media(max-width:800px){.public-tabs{background:#dce8ecf5;padding:0 5px;gap:4px;border-radius:8px 8px 0 0}.public-tabs .tab{padding:10px 3px}.public-tabs .tab.active{background:#08634f;color:#fff}}
+@media print{.hero,.card{box-shadow:none;background:#fff}.hero{border-top-color:#08634f}}
+.mine-picker{grid-template-columns:repeat(2,minmax(0,1fr));margin:0 0 20px;padding:16px;background:#eef4f7;border:1px solid #bfd1dd;border-radius:10px;align-items:start}
+@media(max-width:480px){.mine-picker{grid-template-columns:1fr;padding:12px;gap:12px}}
